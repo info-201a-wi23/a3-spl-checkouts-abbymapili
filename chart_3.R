@@ -11,7 +11,7 @@ library("scales")
 #' Attempt to filter by only using fiction but cannot use stringr functions in 'filter', because they change the vector size.
 
 #' Filter by Fiction
-data_fiction <- data %>% filter(grepl( ' fiction|Fiction', Subjects))
+data_fiction <- data %>% filter(grepl(" fiction|Fiction", Subjects))
 
 
 
@@ -70,9 +70,6 @@ is.numeric(pub_year_vector)
 is.numeric(new_table$PublicationYearRevised)
 min(pub_year_vector, na.rm = TRUE)
 number <- list(pub_year_vector)
-new_table <- new_table %>% mutate(number) %>% arrange(diff)
-is.numeric(new_table$number)
-new_table <- new_table %>% arrange(order (diff))
 
 
 
@@ -83,4 +80,4 @@ ggplot(new_table, aes(PublicationYearRevised)) + geom_bar(fill = "red") +
     x = "Publication Year",
     y = "Appearance in the Data"
   ) 
-ggsave("chart3.png")
+
