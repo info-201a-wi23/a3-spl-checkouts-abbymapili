@@ -7,27 +7,35 @@ output: html_document
 
 An introduction of the data and a description of the trends/books/items you are choosing to analyze (and why!)
 
+I'm analyzing the fiction books checked out: when they were checked out and when where they published. I'm doing this because I like fiction and it's the most popular reading material. I wanna see if older books are popular or newer books, and during what years what was more popular in terms of genre. 
+
 ### Summary Information
 
 Write a summary paragraph of findings that includes the 5 values calculated from your summary information R script
 
-These will likely be calculated using your DPLYR skills, answering questions such as:
+The average difference between the checkout date and the publication year is 4.49. The highest difference between the checkout year and the publication year was 1999. I calculated the earliest publication year, because I thought this was weird, and it turns out that it was the year 20. The most popular fiction books each year are *Two Kinds of Truth* in 2017 which is a crime mystery, *The Red Pencil* in 2018 which is a juvenile fiction book, *After the Flood* in 2019 which is a fantasy novel, the first *Harry Potter* in 2020 which is categorized as juvenile fiction, *The vanishing Half* in 2021 which is categorized literature, *The House of Broken Angels* in 2022 which is categorized as literature, *Lessons in Chemistry* in 2023 which is categorized as literature and humor. The highest number of checkouts was 2950. The average publication year was 2015.
 
-- What is the average number of checkouts for each item?
-- What is the month or year with the most/least checkouts for a book that you're interested in?
-- What is the month or year with the most/least checkouts for ebooks?
-- How has the number of print book checkouts changed over time?
 
-Feel free to calculate and report values that you find relevant.
 
 ### The Dataset
 
-- Who collected/published the data?  
-- What are the parameters of the data (dates, number of checkouts, kinds of books, etc.)?
-- How was the data collected or generated?  
-- Why was the data collected?  
-- What, if any, ethical questions do you need to consider when working with this data?  
-- What are possible limitations or problems with this data?   (at least 200 words)
+- **Who collected/published the data?**
+  The data was collected by The Seattle Public Library.
+  
+- **What are the parameters of the data (dates, number of checkouts, kinds of books, etc.)?**
+  There are 12 parameters all about chekcout data, such as checkout month, checkout year, publisher of book, book title, subject, etc.. I used checkout year, publication year, subjects, and checkout number. 
+
+- **How was the data collected or generated?**
+  They reported the monthly count of SPL checkouts since April of 2005. 
+  
+- **Why was the data collected?**  
+  I couldn't find the information for that after scouring the internet, but it was under a website that said Seattle Open Access website. I'm assuming that they collected the data so the public could access it easily, because libraries are public access and funded by the government.
+  
+- **What, if any, ethical questions do you need to consider when working with this data?**  
+  No, I don't think so. No one's identity or library accounts were shown when the data was shared. Also those books are checked out so if someone sees a book is missing then they know it's checked out from the library. All the data exists, so it's mostly nice that they gave it to people. 
+  
+- **What are possible limitations or problems with this data?**   (at least 200 words)
+  The publication year was very hard to sort. There was a mix of symbols beside the year, some had two publication years listed. That was a problem, so I just removed those from the dataset, which could've skewed my data. The subjects column was disorganized, and I think that fiction vs. nonfiction should have been a seperate column, and genre should be a separate column. I guess I can't really think of anything else off the top of my head.   
 
 
 ### First Trends Over Time Chart
@@ -47,7 +55,7 @@ When we say "clear" or "human readable" titles and labels, that means that you s
 
 Here's an example of how to run an R script inside an RMarkdown file:
 
-``````{r, echo = FALSE, warning = FALSE, code = readLines("chart1_example.R")}
+``````{r, echo = FALSE, warning = FALSE, code = readLines("Chart_1.png")}
 ```
 
 ### Second Trends Over Time Chart
