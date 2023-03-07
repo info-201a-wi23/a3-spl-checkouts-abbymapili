@@ -5,15 +5,89 @@ output: html_document
 
 ### Introduction
 
-An introduction of the data and a description of the trends/books/items you are choosing to analyze (and why!)
 
-I'm analyzing the fiction books checked out: when they were checked out and when where they published. I'm doing this because I like fiction and it's the most popular reading material. I wanna see if older books are popular or newer books, and during what years what was more popular in terms of genre. 
+I'm analyzing the fiction books checked out: when they were checked out and when where they published. I'm doing this because I like fiction and it's the most popular reading material. I wanna see if older books are popular or newer books, and during what years what was more popular in terms of genre. I am going to analyze the frequency of the publication years, the number of checkouts per publication year, and the number of checkouts of the most popular books each year. I will also calculate the difference between the publication and checkout year.
+
+``` {r, echo = FALSE, results= 'hide',warning=FALSE, message=FALSE}
+data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
+library("dplyr")
+library("ggplot2")
+library("stringr")
+library("scales")
+
+#' @brokenCode
+#' 'string_detect_subjects <- str_detect(unlist(data$Subjects), "Fiction")'
+#' 'relisting_subjects <- as.list(string_detect_subjects)'
+#' 'data_fic <- data %>% filter(Subjects == str_subset(Subjects, " fiction"))'
+#' Attempt to filter by only using fiction but cannot use stringr functions in 'filter', because they change the vector size.
+
+#' Filter by Fiction
+data_fiction <- data %>% filter(grepl( " fiction|Fiction", Subjects))
+
+
+
+#' Most Popular Book Every Year
+popular_books_by_year <- data_fiction %>% group_by(CheckoutYear) %>% filter(Checkouts == max(Checkouts, na.rm = TRUE))
+
+
+
+#' Highest Number of Checkouts
+highest_checkout_number <- max(as.vector(popular_books_by_year$Checkouts))
+#' 2950
+
+#' Calculate the average difference between the year it was checked out and the publication year:
+
+#' Also change all the publication years to only one year listed or NA
+pub_year <- data_fiction %>% summarize(PublicationYearRevised = gsub("[0-9]{8}", "", as.numeric(gsub("\\D", "", data_fiction$PublicationYear )))) %>% summarize(PublicationYearRevised = gsub("1991966", "", PublicationYearRevised)) %>% summarize(PublicationYearRevised = gsub("[0-9]{7}", "",  PublicationYearRevised))
+#' * Used to have a bunch of lines but condensed it to one. 
+#' * But it used to be if multiple years were listed (it was always two in the data set) that you had one 8 digit long number
+#' * I had to change it so I just replaced all the 8 digit ones to NA
+
+#' Add new dataset to data frame
+data_fiction <- data_fiction %>% mutate(pub_year) 
+
+#' @Note to self: 
+#' * This code only reports one Publication Year, if multiple listed for one book, then that book won't be used in the data.
+#' * Some of the most popular older books with multiple publications, might not be in the dataset.
+#' * This will be a problem later, but I think I'll just ignore it.
+
+#' Now time to calculate the average difference between years 
+checkout_year_vector <- unlist(data_fiction$CheckoutYear)
+pub_year_vector <- as.numeric(unlist(data_fiction$PublicationYearRevised), na.rm = TRUE)
+differences <- checkout_year_vector - pub_year_vector
+
+average_differance <- mean(differences, na.rm = TRUE)
+#' average difference = 4.6880867
+
+#' Max difference between checkout year and publication date
+max_difference_in_years <- max(differences, na.rm = TRUE)
+#' 1999, which is weird but maybe it's the bible?
+
+average_pub_year <- mean(pub_year_vector, na.rm = TRUE)
+#' 2014.907
+
+#' Testing to see why max difference is weird, but makes sense
+max_pub_year <- max(pub_year_vector, na.rm = TRUE)
+#' 2023
+min_pub_year <- min(pub_year_vector, na.rm = TRUE)
+#' 20
+
+#' Save differences as column + make a new DF to keep computer from crashing
+new_table <- data_fiction %>% select(CheckoutYear, Checkouts, Subjects, PublicationYearRevised) %>% mutate(diff = as.list(differences))
+#' there's too much data and it crashed my computer awhile ago
+
+
+
+min_pub_year <- min(pub_year_vector, na.rm = TRUE)
+number <- list(pub_year_vector)
+
+
+
+```
 
 ### Summary Information
 
-Write a summary paragraph of findings that includes the 5 values calculated from your summary information R script
-
-The average difference between the checkout date and the publication year is 4.49. The highest difference between the checkout year and the publication year was 1999. I calculated the earliest publication year, because I thought this was weird, and it turns out that it was the year 20. The most popular fiction books each year are *Two Kinds of Truth* in 2017 which is a crime mystery, *The Red Pencil* in 2018 which is a juvenile fiction book, *After the Flood* in 2019 which is a fantasy novel, the first *Harry Potter* in 2020 which is categorized as juvenile fiction, *The vanishing Half* in 2021 which is categorized literature, *The House of Broken Angels* in 2022 which is categorized as literature, *Lessons in Chemistry* in 2023 which is categorized as literature and humor. The highest number of checkouts was 2950. The average publication year was 2015.
+The average difference between the checkout date and the publication year is `r average_differance`. The highest difference between the checkout year and the publication year was `r max_difference_in_years`. I calculated the earliest publication year, because I thought this was weird, and it turns out that it was the year `r min_pub_year`.  The highest number of checkouts was `r highest_checkout_number`. The average publication year was `r average_pub_year` or 2015.
 
 
 
@@ -34,32 +108,41 @@ The average difference between the checkout date and the publication year is 4.4
 - **What, if any, ethical questions do you need to consider when working with this data?**  
   No, I don't think so. No one's identity or library accounts were shown when the data was shared. Also those books are checked out so if someone sees a book is missing then they know it's checked out from the library. All the data exists, so it's mostly nice that they gave it to people. 
   
-- **What are possible limitations or problems with this data?**   (at least 200 words)
+- **What are possible limitations or problems with this data?**   
   The publication year was very hard to sort. There was a mix of symbols beside the year, some had two publication years listed. That was a problem, so I just removed those from the dataset, which could've skewed my data. The subjects column was disorganized, and I think that fiction vs. nonfiction should have been a seperate column, and genre should be a separate column. I guess I can't really think of anything else off the top of my head.   
 
 
 ### First Trends Over Time Chart
 
 Chart 1:
-I wanted to analyse how many people read the most popular book that year, and what it would be. The number of checkouts of the most popular book seemed to steadily grow up a certain rate, but there is a significant decrease in 2023 in number of checkouts of the most popular book. 
+ANALYSIS/ INSIGHT -----> I wanted to analyse how many people read the most popular book that year, and what it would be. The number of checkouts of the most popular book seemed to steadily grow up a certain rate, but there is a significant decrease in 2023 in number of checkouts of the most popular book. 
 
-```{r, echo = FALSE, warning = FALSE, code = readLines("chart_1.R")}
+``` {r, echo = FALSE, warning = FALSE, message = FALSE, code = readLines("chart_1.R")}
+data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 ```
+extra analysis: The highest Number of Checkouts for one book was in 2022. The lowest was in 2023. There's 2 juvenile fiction, 1 fantasy, 2 literature, 1 detective/mystery, and one humor. It seems the most popular book for the year got more checkouts over each year and then suddenly stopped in 2023. Maybe people started reading more over the pandemic and just stuck with it? The drop in 2023 makes sense since the data stops in April of 2023 which is the beginning of the year. If you multiply that number by 3 (April is the 4th month and there are 12 in a year) it should be pretty consistent with the data.
+
+
 
 ### Second Trends Over Time Chart
 
 Chart 2: 
-I wanted to analyse if popularity of a book depended on age. It doesn't seem like there's a trend. All the data seems to go up and down somewhat sporadically. The peak was in 2018, and the lowest was 1933.
+ANALYSIS/INSIGHT ---> I wanted to analyse if popularity of a book depended on age. It doesn't seem like there's a trend. All the data seems to go up and down somewhat sporadically. The peak was in 2018, and the lowest was 1933.
 
-```{r, echo = FALSE, code = readLines("chart_2.R")}
+``` {r, echo = FALSE, warning = FALSE, message = FALSE, code = readLines("chart_2.R")}
+data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 ```
+extra analysis: The highest was 2018, the lowest was 1933. One could say there was a slow upward trend from 1988 to 2022 with a slight dip in 2023 for number of books checked out per publication year. It doesn't seem like there's really that much of a correlation, every year seems to go up and down as it goes on because the second and third  tallest peaks are around 1968 and 1963. I guess maybe there would be more of a slight upward trend starting 1988 because we would have more books in more recent years (except for 2023, since it's the beginning of the year) than in past years. It's hard to find old books. I guess they can be reprinted but it would probably be just the classics.
+
 
 ### Your Choice
 
-Chart 3
-I wanted to see the frequency of books in each publication year in the data. I will note that any book that hasn't been checked out wouldn't be noted in the data, but it seems like there's an exponential increase in the number of books published every year that has been checked out recently, although there's a significant drop in 2023. Considering that it's still the beginning of 2023, this makes sense. 
+Chart 3:
 
-```{r, echo = FALSE, code = readLines("chart_3.R")}
+ANALYSIS/ INSIGHT ---> I wanted to see the frequency of books in each publication year in the data. I will note that any book that hasn't been checked out wouldn't be noted in the data, but it seems like there's an exponential increase in the number of books published every year that has been checked out recently, although there's a significant drop in 2023. Considering that it's still the beginning of 2023, this makes sense. 
+
+``` {r, echo = FALSE, warning = FALSE, message = FALSE, code = readLines("chart_3.R")}
+data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 ```
-
+extra analaysis: The highest year was 2018. The lowest 3 were 1933, 1938, and 1948. There are an exponential number of checkouts being done over the years as publication year moves up (except for 2023, because the year isn't over yet and authors like to publish their work near the end of a year). This would make sense because there are probably more books with newer publication dates, and also books that get popularized now get advertised a lot by fans over social media.
 

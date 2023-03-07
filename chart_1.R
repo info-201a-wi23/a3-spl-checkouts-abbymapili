@@ -1,4 +1,4 @@
-data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data 2.csv", stringsAsFactors = FALSE)
+data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 library("dplyr")
 library("ggplot2")
 library("stringr")
@@ -23,7 +23,7 @@ ggplot(data = popular_books_by_year) +
   geom_col(mapping= aes(x= CheckoutYear, y= Checkouts, fill = CheckoutYear)) + 
   labs(
     title = "Most Popular Books per Year",
-    x = "Number of Checkouts",
-    y = "Year of Checkouts",
+    x = "Year of Checkouts",
+    y = "Number of Checkouts",
   ) +
-  scale_fill_continuous(name = "Title", labels = c("Two Kinds of Truth", "The Red Pencil", "After the Flood", "Harry Potter vol. 1", "The Vanishing Half", "The House of Broken Angels", "Lessons in Chemistry"))
+  scale_fill_continuous(name = "Title of Book", labels = c("Two Kinds of Truth", "The Red Pencil", "After the Flood", "Harry Potter vol. 1", "The Vanishing Half", "The House of Broken Angels", "Lessons in Chemistry"))

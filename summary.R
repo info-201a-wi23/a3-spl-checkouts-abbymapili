@@ -13,7 +13,7 @@ library("scales")
 #' Filter by Fiction
 data_fiction <- data %>% filter(grepl( " fiction|Fiction", Subjects))
 
-
+?grepl
 
 #' Most Popular Book Every Year
 popular_books_by_year <- data_fiction %>% group_by(CheckoutYear) %>% filter(Checkouts == max(Checkouts, na.rm = TRUE))

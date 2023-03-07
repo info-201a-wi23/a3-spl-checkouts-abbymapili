@@ -1,4 +1,4 @@
-data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data 2.csv", stringsAsFactors = FALSE)
+data <- read.csv("~/desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 library("dplyr")
 library("ggplot2")
 library("stringr")
@@ -15,14 +15,6 @@ data_fiction <- data %>% filter(grepl( " fiction|Fiction", Subjects))
 
 
 
-#' Most Popular Book Every Year
-popular_books_by_year <- data_fiction %>% group_by(CheckoutYear) %>% filter(Checkouts == max(Checkouts, na.rm = TRUE))
-
-
-
-#' Highest Number of Checkouts
-highest_checkout_number <- max(as.vector(popular_books_by_year$Checkouts))
-#' 2950
 
 #' Calculate the average difference between the year it was checked out and the publication year:
 
@@ -44,34 +36,12 @@ data_fiction <- data_fiction %>% mutate(pub_year)
 checkout_year_vector <- unlist(data_fiction$CheckoutYear)
 pub_year_vector <- as.numeric(unlist(data_fiction$PublicationYearRevised), na.rm = TRUE)
 differences <- checkout_year_vector - pub_year_vector
-is.vector(differences)
-average_differance <- mean(differences, na.rm = TRUE)
-#' average difference = 4.6880867
 
-#' Max difference between checkout year and publication date
-max_difference_in_years <- max(differences, na.rm = TRUE)
-#' 1999, which is weird but maybe it's the bible?
-
-average_pub_year <- mean(pub_year_vector, na.rm = TRUE)
-#' 2014.907
-
-#' Testing to see why max difference is weird, but makes sense
-max_pub_year <- max(pub_year_vector, na.rm = TRUE)
-#' 2023
-min_pub_year <- min(pub_year_vector, na.rm = TRUE)
-#' 20
 
 #' Save differences as column + make a new DF to keep computer from crashing
 new_table <- data_fiction %>% select(CheckoutYear, Checkouts, Subjects, PublicationYearRevised) %>% mutate(diff = as.list(differences))
 #' there's too much data and it crashed my computer awhile ago
 
-?is.continuous
-#' Chart time
-
-is.numeric(pub_year_vector)
-is.numeric(new_table$PublicationYearRevised)
-min(pub_year_vector, na.rm = TRUE)
-number <- list(pub_year_vector)
 
 
 #' * Second Chart
@@ -81,12 +51,13 @@ avg_checkout <- pub_n_checkout %>% group_by(PublicationYearRevised) %>% summariz
 
 
 
-ggplot(data = avg_checkout) +
-  geom_point(mapping= aes(x= PublicationYearRevised, y= AverageCheckout)) + 
+ggplot(data = avg_checkout, aes(x= PublicationYearRevised, y= AverageCheckout, group = 1)) +
+  geom_point( color ="#649e52") + 
+  geom_line(color = "#649e52") +
   labs(
     title = "How does the age of the book affect it's popularity?",
     x = "Publication Year",
-    y = "Checkouts"
+    y = "Number of Checkouts"
   ) +
-  scale_x_discrete(limits = factor(c(seq(1933, 2023, 5))) )
+  scale_x_discrete(limits = factor(c(seq(1933, 2023, 5))) ) 
 
